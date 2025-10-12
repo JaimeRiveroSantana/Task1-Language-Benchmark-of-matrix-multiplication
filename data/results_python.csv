@@ -1,0 +1,5 @@
+language,n,reps,avg_time
+Python,100,3,0.051941
+Python,200,3,0.404254
+Python,500,3,6.560263
+Python,1000,3,55.027762
