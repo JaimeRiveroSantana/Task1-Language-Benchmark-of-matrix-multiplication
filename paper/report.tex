@@ -1,6 +1,5 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{geometry}
@@ -16,34 +15,26 @@
 \maketitle
 
 \begin{abstract}
-This report presents a comparative benchmark of the basic matrix multiplication algorithm ($O(n^3)$) implemented in three programming languages: C, Java, and Python. The study evaluates execution time across increasing matrix sizes (100, 200, 500, and 1000) to analyze performance differences, scalability, and language-specific overhead. Results confirm that C and Java provide highly efficient execution due to compilation and Just-In-Time (JIT) optimization, while Python suffers significant overhead as an interpreted language. The experiment validates the expected cubic time complexity and demonstrates the critical impact of language choice in compute-intensive Big Data tasks.
+This report presents a comparative benchmark of the basic matrix multiplication algorithm ($O(n^3)$) implemented in three programming languages: C, Java, and Python. Execution times were measured for square matrices of sizes 100, 200, 500, and 1000. Results show that C and Java achieve highly efficient performance, while Python is significantly slower due to its interpreted nature. The cubic time complexity is clearly observed as execution time scales with $n^3$.
 \end{abstract}
 
 \section{Introduction}
-Matrix multiplication is a cornerstone operation in scientific computing, machine learning, and Big Data analytics. Despite its conceptual simplicity, its computational cost grows rapidly with matrix size, making performance a critical concern. This assignment implements the naive $O(n^3)$ algorithm in three widely used languages—C, Java, and Python—to compare their raw computational efficiency without external libraries (e.g., BLAS, NumPy). The goal is to understand how language design, compilation model, and runtime environment influence performance in real-world scenarios.
+Matrix multiplication is a fundamental operation in Big Data and scientific computing. This assignment implements the naive $O(n^3)$ algorithm in C, Java, and Python to compare raw computational performance without external libraries. The goal is to evaluate how language design and runtime environment affect execution time.
 
 \section{Methodology}
-\subsection{Algorithm Implementation}
-All three implementations follow the same triple-nested loop structure:
+All implementations use the same triple-nested loop structure:
 \item For each row $i$ in matrix A
     \item For each column $j$ in matrix B
-    \item Compute dot product: $C[i][j] = \sum_{k=0}^{n-1} A[i][k] \cdot B[k][j]$
-Matrices are square ($n \times n$), filled with random values in $[0, 1)$, and initialized with a fixed seed (42) for reproducibility.
-
-\subsection{Benchmarking Procedure}
-\item \textbf{C}: Compiled with \texttt{clang -O2}; timing via \texttt{clock\_gettime(CLOCK\_MONOTONIC)}.
-    \item \textbf{Java}: Executed with OpenJDK; timing via \texttt{System.nanoTime()}.
-    \item \textbf{Python}: Executed with CPython 3.11+; timing via \texttt{time.perf\_counter()}.
-    \item Each experiment was repeated 3 times per matrix size; average time reported.
-    \item Matrix sizes tested: 100, 200, 500, 1000 (larger sizes avoided due to RAM constraints on laptop).
+    \item Compute $C[i][j] = \sum_{k=0}^{n-1} A[i][k] \cdot B[k][j]$
+Matrices are square ($n \times n$), filled with random values in $[0, 1)$, and initialized with seed 42 for reproducibility. Each experiment was repeated 3 times; average time reported. Timing tools:
+\item C: \texttt{clock\_gettime(CLOCK\_MONOTONIC)}
+    \item Java: \texttt{System.nanoTime()}
+    \item Python: \texttt{time.perf\_counter()}
 
 \section{Results}
-Table~\ref{tab:results} shows the average execution time (seconds) for each language and matrix size.
+Average execution time (seconds):
 
-\begin{table}[h]
-\centering
-\caption{Average execution time (seconds) for matrix multiplication}
-\label{tab:results}
+\begin{center}
 \begin{tabular}{crrr}
 \toprule
 Matrix size ($n$) & C & Java & Python \\
@@ -54,118 +45,15 @@ Matrix size ($n$) & C & Java & Python \\
 1000 & 0.956151 & 0.766837 & 55.027762 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
 \section{Discussion}
-\subsection{Performance Comparison}
-Java consistently outperforms C in this benchmark, which may seem counterintuitive. This is likely due to:
-\item Java’s HotSpot JIT compiler optimizing loop hotspots after the first iteration.
-    \item The C implementation using \texttt{double**} (array of pointers), which causes poor cache locality compared to a single contiguous block of memory.
-
-Python is 28x to 58x slower than C/Java, reflecting the overhead of dynamic typing, interpreted execution, and nested list structures (vs. native arrays).
-
-\subsection{Scalability and Complexity}
-Execution time grows approximately with $n^3$, as expected:
-\item From $n=500$ to $n=1000$ (2x size), time increases by ~8x in all languages (e.g., C: 0.119s → 0.956s ≈ 8.03x).
-    \item This confirms the algorithm’s cubic complexity and validates the benchmark methodology.
-
-\subsection{Big Data Implications}
-In Big Data contexts, where matrices can reach millions of rows, even small per-operation overheads compound dramatically. This experiment shows that:
-\item Interpreted languages like Python require optimized libraries (e.g., NumPy with BLAS) for serious workloads.
-    \item Compiled or JIT-compiled languages (C, Java) are far more suitable for raw compute-intensive tasks.
-    \item Memory layout and cache efficiency are as important as algorithmic complexity.
+Java slightly outperforms C, likely due to JIT optimization after the first loop iteration, while the C implementation uses \texttt{double**} (non-cache-friendly). Python is 28x–58x slower, reflecting interpreted overhead and dynamic list structures. Time increases by ~8x when $n$ doubles (e.g., 500→1000), confirming $O(n^3)$ complexity.
 
 \section{Conclusion}
-This benchmark confirms that language choice has a profound impact on computational performance. While C is traditionally seen as the fastest, Java’s advanced runtime optimizations can match or exceed it in practice. Python, without vectorized libraries, is unsuitable for large-scale matrix operations. These insights are essential for Big Data practitioners, who must balance development speed, maintainability, and raw performance when selecting tools for data-intensive applications.
+Language choice critically impacts performance in compute-intensive tasks. C and Java are suitable for raw matrix operations, while Python requires optimized libraries (e.g., NumPy) for scalability. These insights are essential for Big Data practitioners selecting tools for data-intensive workloads.
 
 \section*{Repository}
-All source code, benchmark data, and this report are available at:  
-\url{https://github.com/JaimeRiveroSantana/Task1-Language-Benchmark-of-matrix-multiplication}
-
-\end{document}
-EOFcat > report.tex << 'EOF'
-\documentclass[12pt]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
-\usepackage{booktabs}
-\usepackage{hyperref}
-\usepackage{geometry}
-\usepackage{lmodern}
-\geometry{a4paper, margin=2.5cm}
-
-\title{Assignment 1: Basic Matrix Multiplication in Different Languages}
-\author{Jaime Rivero Santana \\ Degree in Data Science and Engineering \\ University of Las Palmas de Gran Canaria}
-\date{October 20, 2024}
-
-\begin{document}
-
-\maketitle
-
-\begin{abstract}
-This report presents a comparative benchmark of the basic matrix multiplication algorithm ($O(n^3)$) implemented in three programming languages: C, Java, and Python. The study evaluates execution time across increasing matrix sizes (100, 200, 500, and 1000) to analyze performance differences, scalability, and language-specific overhead. Results confirm that C and Java provide highly efficient execution due to compilation and Just-In-Time (JIT) optimization, while Python suffers significant overhead as an interpreted language. The experiment validates the expected cubic time complexity and demonstrates the critical impact of language choice in compute-intensive Big Data tasks.
-\end{abstract}
-
-\section{Introduction}
-Matrix multiplication is a cornerstone operation in scientific computing, machine learning, and Big Data analytics. Despite its conceptual simplicity, its computational cost grows rapidly with matrix size, making performance a critical concern. This assignment implements the naive $O(n^3)$ algorithm in three widely used languages—C, Java, and Python—to compare their raw computational efficiency without external libraries (e.g., BLAS, NumPy). The goal is to understand how language design, compilation model, and runtime environment influence performance in real-world scenarios.
-
-\section{Methodology}
-\subsection{Algorithm Implementation}
-All three implementations follow the same triple-nested loop structure:
-\item For each row $i$ in matrix A
-    \item For each column $j$ in matrix B
-    \item Compute dot product: $C[i][j] = \sum_{k=0}^{n-1} A[i][k] \cdot B[k][j]$
-Matrices are square ($n \times n$), filled with random values in $[0, 1)$, and initialized with a fixed seed (42) for reproducibility.
-
-\subsection{Benchmarking Procedure}
-\item \textbf{C}: Compiled with \texttt{clang -O2}; timing via \texttt{clock\_gettime(CLOCK\_MONOTONIC)}.
-    \item \textbf{Java}: Executed with OpenJDK; timing via \texttt{System.nanoTime()}.
-    \item \textbf{Python}: Executed with CPython 3.11+; timing via \texttt{time.perf\_counter()}.
-    \item Each experiment was repeated 3 times per matrix size; average time reported.
-    \item Matrix sizes tested: 100, 200, 500, 1000 (larger sizes avoided due to RAM constraints on laptop).
-
-\section{Results}
-Table~\ref{tab:results} shows the average execution time (seconds) for each language and matrix size.
-
-\begin{table}[h]
-\centering
-\caption{Average execution time (seconds) for matrix multiplication}
-\label{tab:results}
-\begin{tabular}{crrr}
-\toprule
-Matrix size ($n$) & C & Java & Python \\
-\midrule
-100 & 0.001843 & 0.001331 & 0.051941 \\
-200 & 0.008965 & 0.006810 & 0.404254 \\
-500 & 0.119080 & 0.082889 & 6.560263 \\
-1000 & 0.956151 & 0.766837 & 55.027762 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Discussion}
-\subsection{Performance Comparison}
-Java consistently outperforms C in this benchmark, which may seem counterintuitive. This is likely due to:
-\item Java’s HotSpot JIT compiler optimizing loop hotspots after the first iteration.
-    \item The C implementation using \texttt{double**} (array of pointers), which causes poor cache locality compared to a single contiguous block of memory.
-
-Python is 28x to 58x slower than C/Java, reflecting the overhead of dynamic typing, interpreted execution, and nested list structures (vs. native arrays).
-
-\subsection{Scalability and Complexity}
-Execution time grows approximately with $n^3$, as expected:
-\item From $n=500$ to $n=1000$ (2x size), time increases by ~8x in all languages (e.g., C: 0.119s → 0.956s ≈ 8.03x).
-    \item This confirms the algorithm’s cubic complexity and validates the benchmark methodology.
-
-\subsection{Big Data Implications}
-In Big Data contexts, where matrices can reach millions of rows, even small per-operation overheads compound dramatically. This experiment shows that:
-\item Interpreted languages like Python require optimized libraries (e.g., NumPy with BLAS) for serious workloads.
-    \item Compiled or JIT-compiled languages (C, Java) are far more suitable for raw compute-intensive tasks.
-    \item Memory layout and cache efficiency are as important as algorithmic complexity.
-
-\section{Conclusion}
-This benchmark confirms that language choice has a profound impact on computational performance. While C is traditionally seen as the fastest, Java’s advanced runtime optimizations can match or exceed it in practice. Python, without vectorized libraries, is unsuitable for large-scale matrix operations. These insights are essential for Big Data practitioners, who must balance development speed, maintainability, and raw performance when selecting tools for data-intensive applications.
-
-\section*{Repository}
-All source code, benchmark data, and this report are available at:  
-\url{https://github.com/JaimeRiveroSantana/Task1-Language-Benchmark-of-matrix-multiplication}
+All code and data: \url{https://github.com/JaimeRiveroSantana/Task1-Language-Benchmark-of-matrix-multiplication}
 
 \end{document}
