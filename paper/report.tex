@@ -1,0 +1,87 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{lmodern}
+\usepackage{siunitx}
+
+\geometry{a4paper, margin=2.5cm}
+\title{Informe de la Tarea 1: Multiplicación Básica de Matrices en Diferentes Lenguajes}
+\author{Jaime Rivero Santana  \\ Grado en Ciencia e Ingeniería de Datos \\ Universidad de Las Palmas de Gran Canaria}
+\date{20 de octubre de 2024}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este informe presenta un estudio comparativo del rendimiento del algoritmo básico de multiplicación de matrices (\(O(n^3)\)) implementado en tres lenguajes de programación: C, Java y Python. Se midieron los tiempos de ejecución para matrices cuadradas de tamaños crecientes (100, 200, 500 y 1000) utilizando herramientas de benchmarking profesionales. Los resultados muestran que C y Java ofrecen tiempos similares y altamente eficientes, mientras que Python es significativamente más lento debido a su naturaleza interpretada. El análisis confirma la complejidad cúbica esperada y destaca el impacto del lenguaje en el rendimiento computacional.
+\end{abstract}
+
+\section{Introducción}
+La multiplicación de matrices es una operación fundamental en computación científica, aprendizaje automático y Big Data. En este trabajo, se implementa y compara el algoritmo básico de complejidad \(O(n^3)\) en tres lenguajes ampliamente utilizados: C (lenguaje compilado de bajo nivel), Java (lenguaje compilado a bytecode con JIT) y Python (lenguaje interpretado de alto nivel). El objetivo es evaluar cómo las características inherentes de cada lenguaje afectan el tiempo de ejecución en cargas de trabajo intensivas.
+
+\section{Metodología}
+\subsection{Implementación}
+En los tres lenguajes se implementó el mismo algoritmo:
+\item Triple bucle anidado (\texttt{for i, for j, for k})
+    \item Matrices cuadradas de tamaño \(n \times n\)
+    \item Elementos inicializados con valores aleatorios en \([0, 1)\)
+    \item Semilla fija (\texttt{42}) para reproducibilidad
+
+\subsection{Benchmarking}
+\item \textbf{C}: \texttt{clock\_gettime(CLOCK\_MONOTONIC, ...)}
+    \item \textbf{Java}: \texttt{System.nanoTime()}
+    \item \textbf{Python}: \texttt{time.perf\_counter()}
+    \item Para cada tamaño \(n\), se realizaron 3 repeticiones y se reportó el promedio.
+    \item Los resultados se guardaron en archivos CSV.
+
+\subsection{Entorno de ejecución}
+\item MacBook Pro (Apple Silicon)
+    \item macOS
+    \item Compilador: \texttt{clang}
+    \item Java: OpenJDK
+    \item Python: 3.11+
+
+\section{Resultados}
+La Tabla~\ref{tab:resultados} muestra los tiempos promedio de ejecución (en segundos) para cada combinación de lenguaje y tamaño de matriz.
+
+\begin{table}[h]
+\centering
+\caption{Tiempo promedio de ejecución (segundos) para la multiplicación de matrices}
+\label{tab:resultados}
+\begin{tabular}{c S[table-format=1.6] S[table-format=1.6] S[table-format=2.6]}
+\toprule
+{Tamaño ($n$)} & {C} & {Java} & {Python} \\
+\midrule
+100 & 0.001843 & 0.001331 & 0.051941 \\
+200 & 0.008965 & 0.006810 & 0.404254 \\
+500 & 0.119080 & 0.082889 & 6.560263 \\
+1000 & 0.956151 & 0.766837 & 55.027762 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discusión}
+Los resultados confirman varias observaciones clave:
+
+\item \textbf{Complejidad cúbica}: En los tres lenguajes, el tiempo de ejecución crece aproximadamente con \(n^3\), como se esperaba del algoritmo básico.
+    
+    \item \textbf{Rendimiento de C vs Java}: Java muestra tiempos ligeramente mejores que C en esta implementación. Esto se debe probablemente a que el JIT (Just-In-Time compiler) de Java optimiza eficazmente los bucles calientes tras la primera iteración, mientras que la implementación en C usa \texttt{double**} (array de punteros), que no es óptima para la caché de CPU.
+    
+    \item \textbf{Overhead de Python}: Python es entre 28x y 58x más lento que C/Java, lo cual es consistente con su naturaleza interpretada y el uso de estructuras de datos dinámicas (listas anidadas).
+    
+    \item \textbf{Estabilidad}: Las repeticiones muestran baja varianza, especialmente en Java y C, lo que indica mediciones robustas.
+
+\section{Conclusión}
+Este benchmark demuestra que, para algoritmos intensivos en cómputo como la multiplicación de matrices, la elección del lenguaje tiene un impacto significativo en el rendimiento. Aunque C suele considerarse el más rápido, en este caso específico Java logra un rendimiento comparable o ligeramente superior gracias a su sofisticado JIT. Python, por su parte, es claramente inadecuado para cargas de trabajo de este tipo sin el uso de librerías optimizadas (como NumPy con BLAS). Los resultados subrayan la importancia de entender no solo el algoritmo, sino también las características del entorno de ejecución en aplicaciones de Big Data.
+
+\section*{Código y datos}
+Todo el código fuente y los datos generados están disponibles en el repositorio de GitHub:  
+\url{https://github.com/JaimeRiveroSantana/Task1-Language-Benchmark-of-matrix-multiplication}
+
+\end{document}
